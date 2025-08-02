@@ -1,6 +1,6 @@
-import pkg from 'mongoose';
+import pkg from 'mongoose'
 const { Schema, model, models } = pkg;
-import { hash } from 'bcrypt';
+import { hash } from 'bcrypt'
 
 const schema = new Schema({
     name: {
@@ -16,11 +16,10 @@ const schema = new Schema({
         type: String,
         required: true,
         select: false,
-    },
+    }
 }, {
     timestamps: true,
 });
-
 schema.pre('save', async function (next) {
     if (!this.isModified('password'))
         return next();
@@ -28,4 +27,4 @@ schema.pre('save', async function (next) {
     next();
 });
 
-export const FreeLancer = models.FreeLancer || model('FreeLancer', schema);
+export const Freelancer = models.Freelancer || model('Freelancer', schema);

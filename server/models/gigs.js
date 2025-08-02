@@ -4,7 +4,7 @@ const { Schema, model, models } = pkg;
 const gigSchema = new Schema({
   creator: {
     type: Types.ObjectId,
-    ref: 'FreeLancer',
+    ref: 'Profile',
     required: true,
   },
   title: {
@@ -19,7 +19,7 @@ const gigSchema = new Schema({
   price: {
     type: Number,
     required: true,
-    min: 5,
+    min: 0,
   },
   deliveryTime: {
     type: Number, // in days
@@ -44,6 +44,14 @@ const gigSchema = new Schema({
     {
       question: String,
       answer: String,
+      askedBy: {
+        type: Types.ObjectId,
+        ref: 'Client',
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      },
     },
   ],
   gigImages: [
@@ -59,7 +67,7 @@ const gigSchema = new Schema({
     },
   ],
   ratings: {
-    average: { type: Number, default: 0 },
+    average: { type: Number, default: 0, min: 0, max: 5 },
     count: { type: Number, default: 0 },
   },
   isActive: {

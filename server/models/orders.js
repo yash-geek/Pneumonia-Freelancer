@@ -16,10 +16,15 @@ const schema = new Schema({
     enum: ['unpaid', 'paid', 'refunded'],
     default: 'unpaid',
   },
+  price: {
+    type: Number,
+    default: 0,
+  },
   giveRating: {
     type: Number,
     min: 0,
     max: 5,
+    default:null
   },
   client: {
     type: Types.ObjectId,
@@ -28,10 +33,10 @@ const schema = new Schema({
   },
   freelancer: {
     type: Types.ObjectId,
-    ref: 'Freelancer',
+    ref: 'Profile',
     required: true,
   },
-  gigId: {
+  gig: {
     type: Types.ObjectId,
     ref: 'Gig',
     required: true,

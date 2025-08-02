@@ -1,18 +1,20 @@
 import { compare } from 'bcrypt';
 import { TryCatch } from '../middlewares/error.js';
-import { cookieOptions, sendToken } from '../utils/features.js';
+import { cookieOptions, sendToken, uploadFilesToCloudinary } from '../utils/features.js';
 import { ErrorHandler } from '../utils/utility.js';
-import { FreeLancer } from '../models/freelancers.js';
+import { } from '../models/freelancers.js';
 import { Profile } from '../models/workerProfile.js';
 import { Gig } from '../models/gigs.js';
 import { Client } from '../models/clients.js';
+import { Order } from '../models/orders.js';
+import { Freelancer } from '../models/freelancers.js';
 
 
 const newWorker = TryCatch(
     async (req, res, next) => {
 
         const { name, password, email } = req.body;
-        const user = await FreeLancer.create({
+        const user = await Freelancer.create({
             name,
             password,
             email,
@@ -23,12 +25,13 @@ const newWorker = TryCatch(
 
 const loginWorker = TryCatch(async (req, res, next) => {
     const { password, email } = req.body;
-    const user = await FreeLancer.findOne({ email }).select("+password");
+    const user = await Freelancer.findOne({ email }).select("+password");
     if (!user) return next(new ErrorHandler('User not found', 404));
     const isMatch = await compare(password, user.password);
     if (!isMatch) return next(new ErrorHandler('Invalid Username or Password', 404));
     sendToken(res, user, 200, `Welcome back, ${user.name}`, 'worker');
 });
+
 const logoutWorker = TryCatch(async (req, res) => {
     return res.status(200).cookie("pneumonia-worker-token", "", {
         ...cookieOptions,
@@ -40,12 +43,12 @@ const logoutWorker = TryCatch(async (req, res) => {
 })
 
 const getWorker = TryCatch(async (req, res, next) => {
-    const userId = req.user.id;
+    const userId = req.user._id;
     const role = req.user.role
     if (role == 'client')
         return next(new ErrorHandler('You are not a worker', 404));
     if (!userId) return next(new ErrorHandler('User not found', 404));
-    const user = await FreeLancer.findOne({ _id: userId })
+    const user = await Freelancer.findOne({ _id: userId })
     return res.status(200).json({
         success: true,
         user,
@@ -54,27 +57,31 @@ const getWorker = TryCatch(async (req, res, next) => {
 })
 
 const createProfile = TryCatch(async (req, res, next) => {
-    const userId = req.user.id;
-    const { bio, contact, address, skills } = req.body;
+    console.log('create profile')
+    const userId = req.user._id;
+    console.log(userId)
+    const { bio, contact, address, skills, email, name } = req.body;
     //name, email
-    const user = await FreeLancer.findOne({ _id: userId });
-    if (!user) return next(new ErrorHandler('User not found', 404));
     const file = req.file
     if (!userId) return next(new ErrorHandler('User not found', 404));
     if (!file)
         return next(new ErrorHandler('Please upload profile Picture', 400))
-    //const result = await uploadFilesToCloudinary([file])
+
+
+    const result = await uploadFilesToCloudinary([file])
+
+
     const picture = {
-        public_id: 'public_id',  //result[0].public_id,
-        url: 'picture url' //result[0].url,
+        public_id: result[0].public_id,
+        url: result[0].url,
     }
     const profile = await Profile.create(
         {
-            name: user.name,
+            name,
             picture,
             bio,
             owner: userId,
-            email: user.email,
+            email,
             contact,
             address,
             skills,
@@ -85,9 +92,28 @@ const createProfile = TryCatch(async (req, res, next) => {
         profile,
     });
 })
+const getProfile = TryCatch(async (req, res, next) => {
+
+
+    const userId = req.user._id;
+
+    //name, email
+    const workerProfile = await Profile.findOne({ owner: userId });
+    if (!workerProfile) return res.status(200).json({
+        success: true,
+        status: false,
+        message: 'profile not found',
+    });
+    return res.status(200).json({
+        success: true,
+        workerProfile,
+        status: true,
+    });
+})
+
 const updateProfile = TryCatch(async (req, res, next) => {
-    const userId = req.user.id;
-    const { name, bio, email, contact, address, skills } = req.body;
+    const userId = req.user._id;
+    const { bio, contact, address, skills, email, name } = req.body;
     const file = req.file;
 
     const profile = await Profile.findOne({ owner: userId });
@@ -111,12 +137,13 @@ const updateProfile = TryCatch(async (req, res, next) => {
 
 
     if (file) {
-        // const result = await uploadFilesToCloudinary([file]); // if using cloud
+        const result = await uploadFilesToCloudinary([file])
         profile.picture = {
-            public_id: 'updated_id', // result[0].public_id,
-            url: 'updated url',      // result[0].url,
+            public_id: result[0].public_id, // result[0].public_id,
+            url: result[0].url,      // result[0].url,
         };
     }
+
 
     await profile.save();
 
@@ -128,24 +155,25 @@ const updateProfile = TryCatch(async (req, res, next) => {
 });
 
 const createGig = TryCatch(async (req, res, next) => {
-    const userId = req.user.id;
-    const { title, description, price, deliveryTime, revisions, tags, category, subCategory, faq, ratings, isActive } = req.body;
-    const gigImages = req.files || []
-    if (gigImages.length < 1)
+    console.log('sevrer req')
+    const userId = req.user._id;
+    const { title, description, price, deliveryTime, revisions, tags, category, subCategory, faq, isActive } = req.body;
+    console.log(req.file)
+    const gigImage = req.file || null
+    console.log(gigImage)
+    if (!gigImage)
         return next(new ErrorHandler("Please Upload Images For Your Gig", 400))
-    if (gigImages.length > 5)
-        return next(new ErrorHandler("Max 5 files Images are allowed", 400))
     if (!userId) return next(new ErrorHandler('User not found', 404));
-    //const attachments = await uploadFilesToCloudinary(gigImages)
-    const attachments = gigImages.map((file) => {
-        return {
-            public_id: 'public_id', //file.public_id,
-            url: 'url', //file.url,
-        };
-    });
+    const result = await uploadFilesToCloudinary([gigImage])
+    const myProfile = await Profile.findOne({ owner: userId })
+    const attachments = [{
+        public_id: result[0].public_id,
+        url: result[0].url,
+    }];
+    console.log(attachments)
     const gig = await Gig.create(
         {
-            creator: userId,
+            creator: myProfile._id,
             title,
             description,
             price,
@@ -155,7 +183,6 @@ const createGig = TryCatch(async (req, res, next) => {
             category,
             subCategory,
             faq,
-            ratings,
             isActive,
             gigImages: attachments,
         }
@@ -167,9 +194,10 @@ const createGig = TryCatch(async (req, res, next) => {
 })
 
 const getMyGigs = TryCatch(async (req, res, next) => {
-    const userId = req.user.id;
+    const userId = req.user._id;
     if (!userId) return next(new ErrorHandler('User not found', 404));
-    const myGigs = await Gig.find({ creator: userId }).lean()
+    const myProfile = await Profile.findOne({ owner: userId })
+    const myGigs = await Gig.find({ creator: myProfile._id }).lean()
     const userGigs = myGigs.map(
         (
             {
@@ -181,8 +209,34 @@ const getMyGigs = TryCatch(async (req, res, next) => {
         userGigs,
     });
 })
+const getMyGigInfo = TryCatch(async (req, res, next) => {
+    const userId = req.user._id;
+    const gigId = req.params.id;
+    console.log(gigId)
+
+    if (!userId) return next(new ErrorHandler('User not found', 404));
+
+    const myProfile = await Profile.findOne({ owner: userId });
+    if (!myProfile) return next(new ErrorHandler("You don't have a worker profile yet", 404));
+
+    const myGig = await Gig.findById(gigId);
+    if (!myGig) return next(new ErrorHandler('Gig not found', 404));
+
+    if (myGig.creator.toString() !== myProfile._id.toString()) {
+        return next(new ErrorHandler('Unauthorized', 403));
+    }
+
+    const { creator, ratings, ...userGig } = myGig.toObject();
+
+    return res.status(200).json({
+        success: true,
+        userGig,
+    });
+});
+
+
 const updateGig = TryCatch(async (req, res, next) => {
-    const userId = req.user.id;
+    const userId = req.user._id;
     const {
         title,
         description,
@@ -196,15 +250,16 @@ const updateGig = TryCatch(async (req, res, next) => {
         isActive
     } = req.body;
 
-    const gigImages = req.files || [];
+    const gigImage = req.file || null;
     const gigId = req.params.id;
 
     const gig = await Gig.findById(gigId);
+    const profile = await Profile.findOne({ owner: userId });
 
     if (!gig) return next(new ErrorHandler("Gig not found", 404));
 
 
-    if (gig.creator.toString() !== userId)
+    if (gig.creator.toString() !== profile._id.toString())
         return next(new ErrorHandler("Unauthorized", 403));
 
     if (title) gig.title = title;
@@ -221,24 +276,22 @@ const updateGig = TryCatch(async (req, res, next) => {
 
 
 
-    if (gigImages.length > 0) {
-        gig.gigImages = [];
-        for (const file of gigImages) {
-            //   const result = await cloudinary.uploader.upload(file.path, {
-            //     folder: "gigs",
-            //   });
-            const result = {
-                public_id: 'updated_id', // result[0].public_id,
-                url: 'updated url',      // result[0].url,
-            }
-
-
-
-            gig.gigImages.push({
-                public_id: result.public_id,
-                url: result.secure_url,
-            });
+    if (gigImage) {
+        try {
+            gig.gigImages = [];
+            const result = await uploadFilesToCloudinary([gigImage])
+            const attachments = [{
+                public_id: result[0].public_id,
+                url: result[0].url,
+            }];
+            gig.gigImages = attachments;
+        } catch (error) {
+            return new ErrorHandler("Error uploading image", 500)
         }
+        console.log(gig.gigImages)
+
+
+
     }
 
     await gig.save();
@@ -250,15 +303,46 @@ const updateGig = TryCatch(async (req, res, next) => {
     });
 });
 
+const answerFaqQuestion = TryCatch(async (req, res, next) => {
+    const userId = req.user._id;
+    const { faqId, answer } = req.body;
+    console.log(faqId)
+    const { id: gigId } = req.params;
+
+    if (!faqId || !answer) {
+        return next(new ErrorHandler("faqId and answer are required", 400));
+    }
+
+    const gig = await Gig.findById(gigId);
+    if (!gig) return next(new ErrorHandler("Gig not found", 404));
+    const profile = await Profile.findOne({ owner: userId });
+    if (!profile) return next(new ErrorHandler("Profile not found", 404));
+
+    if (gig.creator.toString() !== profile._id.toString()) {
+        return next(new ErrorHandler("Unauthorized", 403));
+    }
+
+    const faqItem = gig.faq.find(f => f._id.toString() === faqId.toString());
+    if (!faqItem) return next(new ErrorHandler("FAQ not found", 404));
+
+    faqItem.answer = answer;
+    await gig.save();
+
+    res.status(200).json({
+        success: true,
+        message: 'FAQ answer updated successfully',
+        faq: faqItem
+    });
+});
 
 const deleteGig = TryCatch(async (req, res, next) => {
-    const userId = req.user.id; 
+    const userId = req.user.id;
     const gigId = req.params.id;
     const gig = await Gig.findById(gigId);
     if (!gig) return next(new ErrorHandler("Gig not found", 404));
     if (gig.creator.toString() !== userId)
         return next(new ErrorHandler("Unauthorized", 403));
-    await Gig.deleteOne({_id:gigId})
+    await Gig.deleteOne({ _id: gigId })
 
     res.status(200).json({
         success: true,
@@ -266,6 +350,47 @@ const deleteGig = TryCatch(async (req, res, next) => {
     });
 
 })
+
+
+const getOrders = TryCatch(
+    async (req, res, next) => {
+        const userId = req.user._id;
+        const profile = await Profile.findOne({ owner: userId })
+        if (!profile)
+            return next(new ErrorHandler("Profile not found", 404));
+        const ordersForMe = await Order.find({ freelancer: profile._id }).populate('client', 'name').populate('gig', 'title')
+
+        res.status(200).json({
+            success: true,
+            ordersForMe,
+        })
+
+    }
+)
+
+const handleOrders = TryCatch(
+    async (req, res, next) => {
+        const { orderId, status } = req.body;
+        console.log(orderId, status)
+        const userId = req.user._id;
+        const profile = await Profile.findOne({ owner: userId })
+        if (!profile)
+            return next(new ErrorHandler("Profile not found", 404));
+        const order = await Order.findOne({ _id: orderId })
+        if (!order)
+            return next(new ErrorHandler("Order not found", 404));
+        if (order.freelancer.toString() !== profile._id.toString())
+            return next(new ErrorHandler("Unauthorized", 403));
+        order.status = status;
+        await order.save();
+        res.status(200).json({
+            success: true,
+            message: 'order modified succesfully',
+            order,
+        })
+
+    }
+)
 
 
 
@@ -280,4 +405,9 @@ export {
     getMyGigs,
     updateGig,
     deleteGig,
+    handleOrders,
+    getOrders,
+    getProfile,
+    getMyGigInfo,
+    answerFaqQuestion
 }

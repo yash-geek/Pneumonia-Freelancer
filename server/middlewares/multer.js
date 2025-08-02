@@ -5,6 +5,6 @@ const multerUpload = multer({
     },
 })
 const singleImage = multerUpload.single('picture');
-const attachmentMulter = multerUpload.array('gigImages',5);
+const attachmentMulter = multerUpload.single('gigImage');
 
 export {singleImage,attachmentMulter}

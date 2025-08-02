@@ -10,12 +10,18 @@ import { corsOptions } from './constants/config.js';
 
 import clientRoute from './routes/client.js'
 import workerRoute from './routes/freelancer.js'
+import commonRoute from './routes/commonRoute.js'
 import { connectDB } from './utils/features.js';
 import { errorMiddleware } from './middlewares/error.js';
 
 dotenv.config({
     path: './.env',
 })
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const mongoURI = process.env.MONGO_URI
 connectDB(mongoURI)
@@ -32,7 +38,7 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));
 
-
+app.use('/api/v1/user', commonRoute);
 app.use('/api/v1/client', clientRoute)
 app.use('/api/v1/worker', workerRoute)
 

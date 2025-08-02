@@ -22,7 +22,7 @@ const schema = new Schema({
     },
     owner: {
         type: Types.ObjectId,
-        ref: "FreeLancer",
+        ref: "Freelancer",
         required: true,
     },
     email: {
@@ -44,10 +44,8 @@ const schema = new Schema({
         required: true,
     }],
     rating: {
-        type: Number,
-        min: 0,
-        max: 5,
-        default: 0
+        average: { type: Number, default: 0, min: 0, max: 5 },
+        count: { type: Number, default: 0 },
     },
 }, {
     timestamps: true,
