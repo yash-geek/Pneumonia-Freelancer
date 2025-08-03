@@ -3,6 +3,8 @@
 import jwt from 'jsonwebtoken';
 import { ErrorHandler } from '../utils/utility.js';
 import { TryCatch } from './error.js';
+import { Client } from '../models/clients.js';
+import { Freelancer } from '../models/freelancers.js';
 
 const rolesToTokens = {
   client: 'pneumonia-client-token',
@@ -54,4 +56,37 @@ const detectAnyRole = TryCatch((req, res, next) => {
   return next(new ErrorHandler('Unauthorized. No valid token found.', 401));
 });
 
-export { isAuthorized, detectAnyRole };
+const socketAuthenticator = async (err, socket, next) => {
+  try {
+    if (err) return next(err);
+
+    const token =
+      socket.request.cookies['pneumonia-client-token'] ||
+      socket.request.cookies['pneumonia-worker-token'];
+
+    if (!token) return next(new ErrorHandler('Unauthorized. Please login.', 401));
+
+    const decodedData = jwt.verify(token, process.env.JWT_SECRET);
+
+    let user = await Client.findById(decodedData._id);
+    let role = 'Client'; // 💡 Use schema-expected string
+
+    if (!user) {
+      user = await Freelancer.findById(decodedData._id);
+      role = 'Freelancer'; 
+    }
+
+    if (!user) return next(new ErrorHandler('User not found', 404));
+
+    socket.user = user;
+    socket.userRole = role; // ✔ Now this aligns with schema + rest of backend
+
+    return next();
+  } catch (error) {
+    console.error(error);
+    return next(new ErrorHandler('Invalid token. Please login again.', 401));
+  }
+};
+
+
+export { isAuthorized, detectAnyRole, socketAuthenticator };

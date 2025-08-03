@@ -1,0 +1,8 @@
+const NEW_MESSAGE_ALERT = 'NEW_MESSAGE_ALERT'
+const NEW_MESSAGE = 'NEW_MESSAGE'
+
+export {
+    
+    NEW_MESSAGE_ALERT,
+    NEW_MESSAGE,
+}

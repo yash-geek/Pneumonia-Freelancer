@@ -1,25 +1,24 @@
 import pkg, { Types } from 'mongoose'
 const { Schema, model, models } = pkg;
 const schema = new Schema({
-    orderId: {
+    order: {
         type: Types.ObjectId,
         ref: 'Order',
         required: true,
     },
-    participants: [
-        {
-            role:String,
+    participants: [{
+        user: {
             type: Types.ObjectId,
-            ref: 'Client',
             required: true,
+            refPath: 'participants.roleModel'
         },
-        {
-            role:String,
-            type: Types.ObjectId,
-            ref: 'Freelancer',
+        roleModel: {
+            type: String,
             required: true,
-        }
-    ],
+            enum: ['Client', 'Freelancer'],
+        },
+    }]
+    ,
 }, {
     timestamps: true,
 });

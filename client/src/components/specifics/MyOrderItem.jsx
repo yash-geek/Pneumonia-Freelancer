@@ -1,18 +1,23 @@
 import React, { useEffect } from 'react'
 import { useHandleOrderMutation } from '../../redux/apis/api'
 import { useAsyncMutation } from '../../hooks/hook'
+import { CiChat1 as ChatIcon } from 'react-icons/ci'
+import { useNavigate } from 'react-router-dom'
 
 const MyOrderItem = ({ order }) => {
     useEffect(() => {
         console.log(order)
     }, [order])
+    const navigate = useNavigate();
+    const gotoChat = (orderId) => {
+        navigate(`/chat/${order?._id}`)
+    }
 
-    
     const { orderID, client, gig, price, status, time, paymentStatus } = order || {}
     const [updateOrderStatus, isLoading] = useAsyncMutation(useHandleOrderMutation)
     const handleOrder = (status) => {
         console.log('Order status:', status, 'id: ', order._id)
-        updateOrderStatus('Updating Order Status',{ orderId:order._id, status })
+        updateOrderStatus('Updating Order Status', { orderId: order._id, status })
             .then((response) => {
                 console.log('Order status updated successfully:', response)
             })
@@ -34,8 +39,15 @@ const MyOrderItem = ({ order }) => {
                     <p className="text-sm text-gray-500">Time: {new Date(time).toLocaleString()}</p>
                     <p className="text-sm text-gray-500">Payment: {paymentStatus}</p>
                 </div>
-                <div className="text-sm font-semibold text-blue-600">
-                    Status: <span className="capitalize">{status}</span>
+                <div className='flex flex-col gap-4'>
+                    <div className="text-sm font-semibold text-blue-600">
+                        Status: <span className="capitalize">{status}</span>
+                    </div>
+                    {
+                        ['pending', 'accepted', 'in progress'].includes(status) && <div>
+                            <button onClick={() => gotoChat(order)} className='flex px-3 py-1 text-xs font-medium rounded-full items-center gap-1 bg-blue-50 w-fit cursor-pointer '><span>Chat</span><ChatIcon size={'2rem'} /> </button>
+                        </div>
+                    }
                 </div>
             </div>
 

@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useState } from 'react'
+import React, { lazy, Suspense, useEffect } from 'react'
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import LayoutLoader from './components/Layouts/LayoutLoader'
@@ -43,7 +43,6 @@ const BrowseGig = lazy(() => import("./pages/client/BrowseGig"))
 const App = () => {
   const { user, loader } = useSelector((state) => state.auth)
   const dispatch = useDispatch();
-
   useEffect(() => {
     axios.get(`${server}/api/v1/user/role`, { withCredentials: true })
       .then(({ data }) => {
@@ -62,7 +61,7 @@ const App = () => {
       })
       .catch(() => dispatch(userNotExists()));
   }, []);
-  useState(() => {
+  useEffect(() => {
     console.log('User role:', user?.role);
   }, [user]);
 
@@ -99,6 +98,7 @@ const App = () => {
               <Route path="/gigs" element={<ClientLayout Component={MyGigs} />} />
               <Route path="/profile" element={<ClientLayout Component={WorkerProfile} />} />
               <Route path="/gigs/:id" element={<ClientLayout Component={BrowseMyGig} />} />
+              <Route path="/chat/:orderId" element={<ClientLayout Component={Chat} />} />
             </>
           )}
         </Routes>

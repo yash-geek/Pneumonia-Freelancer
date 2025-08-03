@@ -16,6 +16,7 @@ import {
     getProfile,
     getMyGigInfo,
     answerFaqQuestion,
+    fetchOrderWithId,
     } from '../controllers/worker.js'
 import { attachmentMulter, singleImage } from '../middlewares/multer.js';
 
@@ -45,6 +46,7 @@ app.route('/mygigs/:id/answerfaq')
 .put(answerFaqQuestion)
 
 app.get('/getorders', getOrders)
+app.get('/order/:orderId', fetchOrderWithId)
 
 app.put('/handleorder',handleOrders)
 

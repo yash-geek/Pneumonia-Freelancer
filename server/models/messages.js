@@ -1,15 +1,26 @@
 import pkg, { Types } from 'mongoose';
 const { Schema, model, models } = pkg;
 const schema = new Schema({
-    chatId: {
+    chat: {
         type: Types.ObjectId,
         ref: 'Chat',
         required: true,
     },
     sender: {
         type: Types.ObjectId,
-        ref: 'User',
         required: true,
+        refPath: 'senderModel',
+    },
+    senderModel: {
+        type: String,
+        required: true,
+        enum: ['Client', 'Freelancer'],
+        // Assuming 'Profile' is your Freelancer model
+    },
+    role: {
+        type: String,
+        required: true,
+        enum: ['Client', 'Freelancer'],
     },
     text: {
         type: String,

@@ -3,13 +3,14 @@ import jwt from 'jsonwebtoken'
 import {v2 as cloudinary} from 'cloudinary'
 import {v4 as uuid} from 'uuid'
 import { getBase64 } from "./helper.js"
+const isProduction = process.env.NODE_ENV === "PRODUCTION";
+
 const cookieOptions = {
     maxAge: 7 * 24 * 60 * 60 * 1000,
-    sameSite: 'none',
+    sameSite: isProduction ? "none" : "lax",
     httpOnly: true,
-    secure: true,
-
-}
+    secure: isProduction,
+};
 
 const connectDB = (uri) => {
     mongoose.connect(uri, { dbName: 'Pneumonia' }).then((data) => {
@@ -47,11 +48,11 @@ const sendToken = (res, user, code, message, role) => {
 
 
 
-// const emitEvent = (req, event, users, data) => {
-//     let io = req.app.get('io');
-//     const userSocket = getSockets(users)
-//     io.to(userSocket).emit(event,data);
-// }
+const emitEvent = (req, event, users, data) => {
+    let io = req.app.get('io');
+    const userSocket = getSockets(users)
+    io.to(userSocket).emit(event,data);
+}
 const uploadFilesToCloudinary = async (files) => {
     const uploadPromises = files.map((file) => {
         return new Promise((resolve, reject) => {
@@ -94,7 +95,7 @@ export {
     sendToken,
     cookieOptions,
 
-    // emitEvent,
+    emitEvent,
     // deleteFilesFromCloudinary,
     uploadFilesToCloudinary,
 

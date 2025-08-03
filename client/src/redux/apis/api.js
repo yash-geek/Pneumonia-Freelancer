@@ -68,9 +68,9 @@ const api = createApi({
         ),
         fetchOrder: builder.query(
             {
-                query: ({ orderId }) => {
+                query: ({ orderId, route }) => {
                     return {
-                        url: `client/order/${orderId}`,
+                        url: `${route}/order/${orderId}`,
                         credentials: 'include',
                     }
                 },
@@ -98,6 +98,16 @@ const api = createApi({
                 query: ({ id }) => {
                     return {
                         url: `worker/mygigs/${id}`,
+                        credentials: 'include',
+                    }
+                },
+            }
+        ),
+        getMessages: builder.query(
+            {
+                query: ({ orderId }) => {
+                    return {
+                        url: `chat/getmessages/${orderId}`,
                         credentials: 'include',
                     }
                 },
@@ -218,4 +228,5 @@ export const {
     useGetOrdersQuery,
     useHandleOrderMutation,
     useAnswerFaqMutation,
+    useGetMessagesQuery,
 } = api

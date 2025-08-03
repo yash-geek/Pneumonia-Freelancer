@@ -367,6 +367,19 @@ const getOrders = TryCatch(
 
     }
 )
+const fetchOrderWithId = TryCatch(
+    async (req, res, next) => {
+        const orderId = req.params.orderId;
+        const order = await Order.findById(orderId).populate('client', 'email').populate('gig', 'title')
+        if (!order)
+            return next(new ErrorHandler("Order not found", 404));
+        res.status(200).json({
+            success: true,
+            order,
+        })
+
+    })
+
 
 const handleOrders = TryCatch(
     async (req, res, next) => {
@@ -409,5 +422,6 @@ export {
     getOrders,
     getProfile,
     getMyGigInfo,
-    answerFaqQuestion
+    answerFaqQuestion,
+    fetchOrderWithId
 }
