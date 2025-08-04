@@ -1,7 +1,6 @@
 import mongoose from "mongoose"
 import jwt from 'jsonwebtoken'
-import pkg from 'cloudinary';
-const cloudinary = pkg.v2
+import { v2 as cloudinary } from 'cloudinary';
 import { v4 as uuid } from 'uuid'
 import { getBase64 } from "./helper.js"
 const isProduction = process.env.NODE_ENV === "PRODUCTION";
