@@ -3,6 +3,7 @@ import toast from 'react-hot-toast';
 import { CiSearch as SearchIcon } from 'react-icons/ci';
 import { FaFilter as FilterIcon } from 'react-icons/fa';
 import GigList from '../../components/specifics/GigList';
+import LayoutLoader from '../../components/Layouts/LayoutLoader'
 import { useLazySearchGigsQuery } from '../../redux/apis/api';
 
 const Home = () => {
@@ -98,7 +99,9 @@ const Home = () => {
             </div>
           </div>
         }
-        <GigList gigs={gigList} />
+        {
+          isLoading?<LayoutLoader/> :
+        <GigList gigs={gigList} />}
       </div>
     </div>
   )

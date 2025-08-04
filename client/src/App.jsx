@@ -4,17 +4,10 @@ import { Toaster } from 'react-hot-toast'
 import LayoutLoader from './components/Layouts/LayoutLoader'
 
 import ProtectRoute from './components/Auth/ProtectRoute'
-import ClientLayout from './components/Layouts/ClientLayout'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 import { server } from './constants/config'
 import { userExists, userNotExists } from './redux/reducers/auth'
-import Chat from './pages/Chat'
-import Dashboard from './pages/worker/Dashboard'
-import ManageOrders from './pages/worker/ManageOrders'
-import MyGigs from './pages/worker/MyGigs'
-import WorkerProfile from './pages/worker/WorkerProfile'
-import BrowseMyGig from './pages/worker/BrowseMyGig'
 
 // Lazy load your pages
 const Home = lazy(() => import("./pages/client/Home"))
@@ -24,6 +17,13 @@ const NotFound = lazy(() => import("./pages/NotFound"))
 const Orders = lazy(() => import("./pages/client/Orders"))
 const Profile = lazy(() => import("./pages/Profile"))
 const BrowseGig = lazy(() => import("./pages/client/BrowseGig"))
+const BrowseMyGig = lazy(() => import("./pages/worker/BrowseMyGig"))
+const WorkerProfile = lazy(() => import("./pages/worker/WorkerProfile"))
+const ManageOrders = lazy(() => import("./pages/worker/ManageOrders"))
+const MyGigs = lazy(() => import("./pages/worker/MyGigs"))
+const Dashboard = lazy(() => import("./pages/worker/Dashboard"))
+const Chat = lazy(() => import("./pages/Chat"))
+const ClientLayout = lazy(() => import("./components/Layouts/ClientLayout"))
 
 // Dummy role-based components
 // const ClientProfile = lazy(() => import('./pages/ClientProfile'))
@@ -34,7 +34,7 @@ const BrowseGig = lazy(() => import("./pages/client/BrowseGig"))
 
 
 // {
-//   name: 'Yash-kun',
+//   name: 'Yash',
 //   role: 'client', // try changing to 'worker' or null
 // }
 
