@@ -157,7 +157,7 @@ io.on('connection', (socket) => {
             const senderSocketId = userSocketIDs.get(user._id.toString());
 
             const membersSocket = [senderSocketId, receiverSocketId].filter(Boolean);
-            console.log("🚀 Emitting to sockets:", membersSocket);
+            console.log("Emitting to sockets:", membersSocket);
 
 
             const messageForRealTime = {

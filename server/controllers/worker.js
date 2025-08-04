@@ -405,6 +405,28 @@ const handleOrders = TryCatch(
     }
 )
 
+const getDeadlines = TryCatch(async (req, res, next) => {
+  const freelancerId = req.user._id;
+  const profile = await Profile.findOne({ owner: freelancerId });
+  const orders = await Order.find({ freelancer: profile._id })
+    .populate('gig', 'title deliveryTime')
+    .select('orderID createdAt gig');
+
+  const deadlines = orders.map(order => {
+    const placedDate = new Date(order.createdAt);
+    const deliveryDate = new Date(placedDate);
+    deliveryDate.setDate(placedDate.getDate() + order.gig.deliveryTime);
+
+    return {
+      id: order._id,
+      title: order.gig.title,
+      start: placedDate,
+      end: deliveryDate,
+    };
+  });
+
+  res.status(200).json({ success: true, deadlines });
+});
 
 
 export {
@@ -423,5 +445,6 @@ export {
     getProfile,
     getMyGigInfo,
     answerFaqQuestion,
-    fetchOrderWithId
+    fetchOrderWithId,
+    getDeadlines,
 }

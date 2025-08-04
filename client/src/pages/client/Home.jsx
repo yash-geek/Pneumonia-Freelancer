@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import { CiSearch as SearchIcon } from 'react-icons/ci'
+import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { CiSearch as SearchIcon } from 'react-icons/ci';
+import { FaFilter as FilterIcon } from 'react-icons/fa';
 import GigList from '../../components/specifics/GigList';
 import { useLazySearchGigsQuery } from '../../redux/apis/api';
-import { FaFilter as FilterIcon } from 'react-icons/fa'
 
 const Home = () => {
   const [search, setSearch] = useState('');
@@ -29,19 +30,17 @@ const Home = () => {
   }
 
   const handleSearch = () => {
-    console.log(search, minVal, maxVal);
+    if(search==='')return toast.error('Search field is empty')
     triggerSearch({ category: search, minPrice:minVal, maxPrice:maxVal });
-    console.log(data)
   };
   useEffect(() => {
-    console.log('new data arrived', data)
     if (data) {
       setGigList(data?.gigs);
     }
   }, [data])
 
   return (
-    <div className='w-[100%] flex flex-col items-center py-4 overflow-hidden' >
+    <div className='w-[100%] flex flex-col items-center pt-4 overflow-hidden scrollbar-thin-pretty' >
 
       <div className="w-[90%] max-w-2xl mx-auto bg-white shadow-md rounded-lg p-4 flex items-center gap-3">
         <FilterIcon className='cursor-pointer m-1 ' onClick={handleFilterOpen} />
@@ -70,7 +69,7 @@ const Home = () => {
 
       <div className='p-5 w-[100%] overflow-auto'>
         {
-          isFilter && <div className="flex fixed flex-col gap-4 p-4 bg-white shadow-lg rounded-2xl w-[90%] sm:w-[60%] md:w-[30%] lg:w-[20%] h-[60vh] overflow-auto z-50">
+          isFilter && <div className="flex fixed flex-col gap-4 p-4 bg-white shadow-lg rounded-2xl w-[90%] sm:w-[60%] md:w-[30%] lg:w-[20%] h-[60vh] overflow-auto z-50 scrollbar-thin-pretty">
             <input
               value={minVal}
               placeholder="Min price"

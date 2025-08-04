@@ -12,7 +12,6 @@ const Orders = () => {
   const [status, setStatus] = useState(['pending', 'in progress', 'completed', 'cancelled']);
   const navigate = useNavigate();
   useEffect(() => {
-    if (data) console.log(data)
   }, [data, isError, error])
 
   const selectedBtn = 'bg-blue-600 text-white shadow-md';
@@ -33,8 +32,6 @@ const Orders = () => {
     navigate(`/chat/${order?._id}`) // Assuming you want to navigate to the first order's chat
     // Here you would typically check if a chat exists for the order and create one if it doesn't
     // For now, just logging the action
-    console.log('order', order)
-    console.log('create chat if not there and navigate to chat page')
   }
   const getStatusColor = (status) => {
     switch (status) {
@@ -71,7 +68,7 @@ const Orders = () => {
         ))}
       </div>
 
-      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 scrollbar-thin-pretty">
         {data?.orders
           ?.filter(order => status.includes(order.status))
           .map(order => (

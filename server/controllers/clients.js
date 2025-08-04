@@ -7,6 +7,7 @@ import { Gig } from '../models/gigs.js'
 import { Profile } from '../models/workerProfile.js';
 import { Order } from '../models/orders.js';
 import { v4 as uuidv4 } from 'uuid';
+import stripe from '../utils/stripe.js'
 
 const newClient = TryCatch(
     async (req, res, next) => {
@@ -221,7 +222,7 @@ const rateOrders = TryCatch(
             return next(new ErrorHandler('Freelancer not found', 404));
         }
         const newRating = ((freelancer.rating.average * freelancer.rating.count) + rating) / (freelancer.rating.count + 1);
-        freelancer.rating.average = Math.round(newRating * 100) / 100; 
+        freelancer.rating.average = Math.round(newRating * 100) / 100;
         freelancer.rating.count += 1;
         await freelancer.save();
         await gig.save();
@@ -235,6 +236,46 @@ const rateOrders = TryCatch(
         });
     }
 )
+
+const createStripeSession = TryCatch(
+    async (req, res, next) => {
+        const { gigId } = req.body;
+
+        const gig = await Gig.findById(gigId);
+        if (!gig) return next(new ErrorHandler("Gig not found", 404));
+
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'inr',
+                        product_data: {
+                            name: gig.title,
+                            description: gig.description?.slice(0, 100),
+                        },
+                        unit_amount: gig.price * 100,
+                    },
+                    quantity: 1,
+                },
+            ],
+            mode: 'payment',
+            success_url: `${process.env.CLIENT_URL}payment-success`,
+            cancel_url: `${process.env.CLIENT_URL}payment-cancel`,
+            metadata: {
+                clientId: req.user._id.toString(),
+                gigId: gig._id.toString(),
+                freelancerId: gig.creator.toString()
+            }
+        });
+
+        res.status(200).json({
+            success: true,
+            url: session.url
+        });
+    }
+);
+
 
 
 
@@ -254,4 +295,5 @@ export {
     askQuestion,
     rateOrders,
     getOrderDetails,
+    createStripeSession,
 }

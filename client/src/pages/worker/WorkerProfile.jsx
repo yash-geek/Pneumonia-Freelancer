@@ -40,8 +40,6 @@ const WorkerProfile = () => {
 
 
 
-
-    console.log(name, email, avatar.file)
     if (!name || !email || !contact || !address) {
       return toast.error('Please fill all required fields!');
     }
@@ -57,10 +55,7 @@ const WorkerProfile = () => {
     skills
       .filter(skill => skill.trim() !== '')
       .forEach(skill => formData.append('skills[]', skill));
-
-    console.log([...formData.entries()]);
     if (data?.workerProfile) {
-      console.log('profile present')
       try {
         const res = await updateProfileTrigger('Updating Your Profile', formData)
         if (res?.success) {
@@ -92,7 +87,6 @@ const WorkerProfile = () => {
 
   useEffect(() => {
     if (data?.status) {
-      console.log(data)
       setName(data?.workerProfile?.name)
       setBio(data?.workerProfile?.bio)
       setAddress(data?.workerProfile?.address)

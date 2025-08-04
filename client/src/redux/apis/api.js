@@ -5,7 +5,7 @@ import { server } from "../../constants/config"
 const api = createApi({
     reducerPath: "api",
     baseQuery: fetchBaseQuery({ baseUrl: `${server}/api/v1/` }),
-    tagTypes: ['Gigs', 'Orders'],
+    tagTypes: ['Gigs', 'Orders','Deadlines'],
     endpoints: (builder) => ({
         searchGigs: builder.query(
             {
@@ -150,7 +150,19 @@ const api = createApi({
                         credentials: 'include',
                     }
                 },
-                providesTags: ['Orders']
+                providesTags: ['Orders'],
+                
+            }
+        ),
+        getDeadlines: builder.query(
+            {
+                query: () => {
+                    return {
+                        url: `worker/orders-deadlines`,
+                        credentials: 'include',
+                    }
+                },
+                providesTags: ['Deadlines']
             }
         ),
         updateMyGig: builder.mutation({
@@ -166,7 +178,7 @@ const api = createApi({
             query: ({ _id, answer, gigId }) => ({
                 url: `worker/mygigs/${gigId}/answerfaq`,
                 method: 'PUT',
-                body: { answer, faqId: _id }, 
+                body: { answer, faqId: _id },
                 credentials: 'include',
             }),
             invalidatesTags: ['Gigs']
@@ -189,8 +201,17 @@ const api = createApi({
                     gigId: id,
                 },
             }),
-            invalidatesTags: ['Orders']
+            invalidatesTags: ['Orders','Deadlines']
         }),
+        createStripeSession: builder.mutation({
+            query: ({ gigId }) => ({
+                url: 'client/stripe/create',
+                method: 'POST',
+                body: { gigId }
+            })
+        }),
+        
+
         rateOrder: builder.mutation({
             query: ({ orderId, rating, gigId, freelancerId }) => ({
                 url: `client/rateorder`,
@@ -229,4 +250,6 @@ export const {
     useHandleOrderMutation,
     useAnswerFaqMutation,
     useGetMessagesQuery,
+    useCreateStripeSessionMutation,
+    useGetDeadlinesQuery,
 } = api

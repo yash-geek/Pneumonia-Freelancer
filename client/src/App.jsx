@@ -61,9 +61,7 @@ const App = () => {
       })
       .catch(() => dispatch(userNotExists()));
   }, []);
-  useEffect(() => {
-    console.log('User role:', user?.role);
-  }, [user]);
+
 
   if (loader) return <LayoutLoader />;
 
@@ -86,6 +84,8 @@ const App = () => {
               <Route path="/profile" element={<ClientLayout Component={Profile} user={user} />} />
               <Route path="/gig/:id" element={<ClientLayout Component={BrowseGig} />} />
               <Route path="/chat/:orderId" element={<ClientLayout Component={Chat} />} />
+              <Route path="/payment-success" element={<h2>Payment Successful! Arigatou~ 💖</h2>} />
+              <Route path="/payment-cancel" element={<h2>Payment Canceled... Yamete~ 😭</h2>} />
             </>
           )}
 

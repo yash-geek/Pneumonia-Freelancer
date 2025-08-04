@@ -67,7 +67,6 @@ const MyGigs = () => {
 
 
   useEffect(() => {
-    if (myGigsData) console.log(myGigsData);
   }, [isLoading, data, myGigsData]);
 
   return data?.status ? (

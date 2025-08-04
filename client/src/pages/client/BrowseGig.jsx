@@ -2,8 +2,9 @@ import { IoArrowBack } from 'react-icons/io5'
 import { FaStar } from 'react-icons/fa'
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { useAskQuestionMutation, useGetGigInfoQuery, useLazyWorkerProfileQuery, useNewOrderMutation } from '../../redux/apis/api'
+import { useAskQuestionMutation, useCreateStripeSessionMutation, useGetGigInfoQuery, useLazyWorkerProfileQuery, useNewOrderMutation } from '../../redux/apis/api'
 import { useAsyncMutation } from '../../hooks/hook'
+import toast from 'react-hot-toast'
 
 const BrowseGig = () => {
   const params = useParams()
@@ -29,7 +30,6 @@ const BrowseGig = () => {
   const handleSubmitQuestion = async () => {
     setIsQuestion(false);
     await askQuestion("Updating FAQ's", { question: question, id: params.id });
-    console.log("Question asked successfully");
     setQuestion("");
   };
 
@@ -38,12 +38,25 @@ const BrowseGig = () => {
     try {
       const res = await orderTrigger('Creating New Order...', { id: params.id });
     } catch (err) {
-      console.error('Order creation failed:', err);
+      toast.error('Order creation failed:', err);
     }
-    console.log('New order handler called');
     setNewOrder(false);
     window.location.reload();
   };
+  // const [createStripeSession, isLoadingNewOrder] = useAsyncMutation(useCreateStripeSessionMutation);
+
+  // const newOrderHandler = async () => {
+  //   try {
+  //     const res = await createStripeSession('Redirecting...', { gigId: params.id });
+  //     if (res?.data?.url) {
+  //       window.location.href = res.data.url; // Redirect to Stripe Checkout
+  //     } else {
+  //       console.error('Stripe URL not found');
+  //     }
+  //   } catch (err) {
+  //     console.error('Stripe session creation failed:', err);
+  //   }
+  // };
 
 
 
@@ -51,8 +64,6 @@ const BrowseGig = () => {
     if (gigInfo?.gig?.creator) {
       getWorker({ workerId: gigInfo.gig.creator });
     }
-    console.log(gigInfo);
-    console.log('creator',gigCreator)
   }, [gigInfo, gigCreator, getWorker]);
 
   if (isLoadingGig || isLoadingCreator) return <p className="text-center mt-10 text-xl">Loading... uwu~</p>;
@@ -165,7 +176,7 @@ const BrowseGig = () => {
         </div>
         <div className='mt-4'>
           <img
-            src ={gigInfo?.gig?.gigImages?.[0]?.url || 'https://cdn.dribbble.com/userupload/16573490/file/original-86360b65d51ebcad69df73818d1f53a9.jpg?resize=400x0'}
+            src={gigInfo?.gig?.gigImages?.[0]?.url || 'https://cdn.dribbble.com/userupload/16573490/file/original-86360b65d51ebcad69df73818d1f53a9.jpg?resize=400x0'}
             alt='Gig Preview'
             className='rounded-xl w-full h-64 object-cover'
           />

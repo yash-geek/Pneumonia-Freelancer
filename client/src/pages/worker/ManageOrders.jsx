@@ -34,7 +34,6 @@ const ManageOrders = () => {
   const { data, isLoading, refetch } = useGetProfileQuery()
   const { data: ordersData, isLoading: ordersLoading, refetch: ordersRefetch } = useGetOrdersQuery()
   useEffect(() => {
-    console.log(ordersData)
   }, [isLoading, data, ordersData])
   return (
     data?.status ?

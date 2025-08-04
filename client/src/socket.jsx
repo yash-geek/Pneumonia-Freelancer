@@ -7,6 +7,7 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
 import { useSelector } from 'react-redux';
 import { server } from './constants/config';
+import toast from 'react-hot-toast';
 
 const SocketContext = createContext(null);
 
@@ -27,24 +28,21 @@ export const SocketProvider = ({ children }) => {
       socketRef.current = socket;
 
       socket.on('connect', () => {
-        console.log('🟢 Socket connected:', socket.id);
         setSocketReady(true);
       });
 
       socket.on('disconnect', () => {
-        console.log('🔴 Socket disconnected');
         setSocketReady(false);
       });
 
       socket.on('connect_error', (err) => {
-        console.error('❌ Socket connect error:', err.message);
+        toast.error('connection error')
       });
     }
 
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
-        console.log('🧹 Cleaned up socket on unmount');
         socketRef.current = null;
         setSocketReady(false);
       }
@@ -60,21 +58,3 @@ export const SocketProvider = ({ children }) => {
 
 
 
-// FILE: Chat.jsx (ONLY MODIFIED PART)
-
-// Add this above your return statement
-
-// 💡 Additional logs to add for debugging
-// Inside Chat.jsx -> useEffect(() => { if (!socket) return; ...
-// just before setMessages:
-// console.log('[💬 Chat.jsx] Received NEW_MESSAGE:', incomingMessage);
-
-// // Inside Chat.jsx -> sendMessage(): after emitting:
-// console.log('[📤 Chat.jsx] Sent message:', message);
-
-// In App.jsx, wrap all `<Routes />` and `<Toaster />` inside `{user && socket ? (...) : <LayoutLoader />}` if needed for stability
-
-// Optional in App.jsx if issues persist:
-// useEffect(() => {
-//   console.log('[🧪 App] Current User:', user);
-// }, [user]);

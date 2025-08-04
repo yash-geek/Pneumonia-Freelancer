@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useRef } from 'react';
+import moment from 'moment';
+import { useEffect, useRef, useState } from 'react';
 import { IoMdSend as SendIcon } from 'react-icons/io';
 import { IoArrowBack as BackIcon } from 'react-icons/io5';
-import { Link, useParams } from 'react-router-dom';
-import { useFetchOrderQuery, useGetMessagesQuery } from '../redux/apis/api';
-import LayoutLoader from '../components/Layouts/LayoutLoader';
 import { useSelector } from 'react-redux';
+import { Link, useParams } from 'react-router-dom';
+import LayoutLoader from '../components/Layouts/LayoutLoader';
+import { useFetchOrderQuery, useGetMessagesQuery } from '../redux/apis/api';
 import { useSocket } from '../socket';
-import moment from 'moment'
 
 const Chat = () => {
     const socket = useSocket();
@@ -22,9 +22,7 @@ const Chat = () => {
     const { data: messageData, isLoading: messageLoading, isError: messageError } = useGetMessagesQuery({ orderId });
 
     // Scroll to latest message
-    socket?.onAny((event, ...args) => {
-        console.log(`🔥 Event: ${event}`, args);
-    });
+
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
@@ -32,7 +30,6 @@ const Chat = () => {
     // Load initial messages
     useEffect(() => {
         if (messageData) {
-            console.log('messageData', messageData)
             setMessages(messageData.messages);
         }
     }, [messageData]);
@@ -42,9 +39,7 @@ const Chat = () => {
         if (!socket) return;
 
         const handleNewMessage = ({ chatId, message: incomingMessage }) => {
-            console.log("UwU 💌 New message:", incomingMessage);
 
-            // 💡 Prevent duplicate messages by checking if ID already exists
             setMessages(prev => {
                 const exists = prev.some(msg => msg._id === incomingMessage._id);
                 if (!exists) return [...prev, incomingMessage];
@@ -80,10 +75,6 @@ const Chat = () => {
         setMessages((prev) => [...prev, tempMessage]);
 
         socket?.emit("NEW_MESSAGE", {
-            orderId,
-            content: message,
-        });
-        console.log("🔥 Emitting NEW_MESSAGE", {
             orderId,
             content: message,
         });

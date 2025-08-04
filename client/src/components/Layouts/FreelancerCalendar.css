@@ -1,0 +1,50 @@
+/* src/components/Layouts/FreelancerCalendar.css */
+
+.rbc-calendar {
+  font-family: 'Inter', sans-serif;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #f9fafb;
+}
+
+.rbc-toolbar {
+  background-color: #eef2ff;
+  padding: 0.75rem 1rem;
+  border-radius: 12px 12px 0 0;
+  display: flex;
+  justify-content: space-between;
+  color: #3d63c4;
+  font-weight: 600;
+}
+
+.rbc-toolbar button {
+  background: #3d63c4;
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.rbc-toolbar button:hover {
+  background: #3d63c4;
+}
+
+.rbc-event {
+  background-color: #3d63c4 !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 2px 6px;
+  font-size: 0.8rem;
+}
+
+.rbc-today {
+  background-color: #fef3c7 !important;
+}
+
+.rbc-selected {
+  background-color: #facc15 !important;
+}

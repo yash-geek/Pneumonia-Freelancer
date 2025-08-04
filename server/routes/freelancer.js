@@ -17,6 +17,7 @@ import {
     getMyGigInfo,
     answerFaqQuestion,
     fetchOrderWithId,
+    getDeadlines,
     } from '../controllers/worker.js'
 import { attachmentMulter, singleImage } from '../middlewares/multer.js';
 
@@ -49,5 +50,6 @@ app.get('/getorders', getOrders)
 app.get('/order/:orderId', fetchOrderWithId)
 
 app.put('/handleorder',handleOrders)
+app.get('/orders-deadlines', getDeadlines)
 
 export default app;

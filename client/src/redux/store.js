@@ -1,24 +1,21 @@
-import {configureStore} from '@reduxjs/toolkit'
-//import api from './api/api';
-//import authSlice from './reducers/auth';
+import { configureStore } from '@reduxjs/toolkit';
 import miscSlice from './reducers/misc';
 import api from './apis/api';
 import authSlice from './reducers/auth';
-//import chatSlice from './reducers/chat';
-const store = configureStore({
-    reducer:{
-        // [authSlice.name]:authSlice.reducer,
-        [miscSlice.name]:miscSlice.reducer,
-        [api.reducerPath]:api.reducer,
-        [authSlice.name]:authSlice.reducer,
-        // [chatSlice.name]:chatSlice.reducer,
-        // [api.reducerPath]:api.reducer,
-    },
-    middleware:(defaultMiddleware)=>[
-        ...defaultMiddleware(),
-        api.middleware, 
-    ],
-})
+import { factApi } from './apis/factApi'; 
 
+const store = configureStore({
+  reducer: {
+    [miscSlice.name]: miscSlice.reducer,
+    [api.reducerPath]: api.reducer,
+    [authSlice.name]: authSlice.reducer,
+    [factApi.reducerPath]: factApi.reducer, 
+  },
+  middleware: (defaultMiddleware) => [
+    ...defaultMiddleware(),
+    api.middleware, 
+    factApi.middleware, 
+  ],
+});
 
 export default store;

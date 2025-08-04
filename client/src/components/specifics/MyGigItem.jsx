@@ -1,10 +1,7 @@
-import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { FaStar as StarIcon } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 const MyGigItem = ({ gig }) => {
-    useEffect(() => {
-        console.log(gig);
-    }, [gig]);
+
 
     if (!gig) return <div className="text-red-500">No Gig</div>;
 

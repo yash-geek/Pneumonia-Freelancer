@@ -47,12 +47,10 @@ const Login = () => {
                 password: password.value,
 
             }, config);
-            console.log(data)
             const userData = {
                 ...data.user,
                 role: data.role, // Assuming the response contains the user role
             }
-            console.log(userData)
             dispatch(userExists(userData))
             toast.success(data.message, { id: toastId })
 

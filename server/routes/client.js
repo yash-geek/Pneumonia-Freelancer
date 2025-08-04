@@ -13,7 +13,8 @@ import {
     getGigInfo,
     askQuestion,
     rateOrders,
-    getOrderDetails
+    getOrderDetails,
+    createStripeSession
 } from '../controllers/clients.js'
 
 
@@ -41,6 +42,7 @@ app.put('/rateorder',rateOrders)
 app.get('/orders',getOrders)
 app.get('/order/:orderId',getOrderDetails)
 app.put('/orders',cancelOrder)
+app.post('/stripe/create', createStripeSession);
 
 
 export default app;

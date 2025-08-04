@@ -1,13 +1,10 @@
-import React, { useEffect } from 'react'
-import { useHandleOrderMutation } from '../../redux/apis/api'
-import { useAsyncMutation } from '../../hooks/hook'
+import toast from 'react-hot-toast'
 import { CiChat1 as ChatIcon } from 'react-icons/ci'
 import { useNavigate } from 'react-router-dom'
+import { useAsyncMutation } from '../../hooks/hook'
+import { useHandleOrderMutation } from '../../redux/apis/api'
 
 const MyOrderItem = ({ order }) => {
-    useEffect(() => {
-        console.log(order)
-    }, [order])
     const navigate = useNavigate();
     const gotoChat = (orderId) => {
         navigate(`/chat/${order?._id}`)
@@ -16,13 +13,12 @@ const MyOrderItem = ({ order }) => {
     const { orderID, client, gig, price, status, time, paymentStatus } = order || {}
     const [updateOrderStatus, isLoading] = useAsyncMutation(useHandleOrderMutation)
     const handleOrder = (status) => {
-        console.log('Order status:', status, 'id: ', order._id)
         updateOrderStatus('Updating Order Status', { orderId: order._id, status })
             .then((response) => {
-                console.log('Order status updated successfully:', response)
+                toast.success('Order status updated successfully:')
             })
             .catch((error) => {
-                console.error('Error updating order status:', error)
+                toast.error('Error updating order status:' + error)
             })
     }
 

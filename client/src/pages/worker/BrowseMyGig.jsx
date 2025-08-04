@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import { IoArrowBack as BackIcon } from 'react-icons/io5'
-import { FaStar as StarIcon } from 'react-icons/fa'
-import { useLocation } from 'react-router-dom'
-import { useAnswerFaqMutation, useGetMyGigInfoQuery, useUpdateMyGigMutation } from '../../redux/apis/api'
 import { useFileHandler } from '6pp'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+import { IoArrowBack as BackIcon } from 'react-icons/io5'
+import { Link, useLocation } from 'react-router-dom'
 import { useAsyncMutation } from '../../hooks/hook'
+import { useAnswerFaqMutation, useGetMyGigInfoQuery, useUpdateMyGigMutation } from '../../redux/apis/api'
 const BrowseMyGig = (
 
 
@@ -14,7 +12,6 @@ const BrowseMyGig = (
   const location = useLocation();
   const gigId = location.pathname.split('/').pop();
   const { data: gigInfo, isLoading } = useGetMyGigInfoQuery({ id: gigId });
-  console.log(gigInfo);
 
 
   const [faqList, setFaqList] = useState([]);
@@ -39,7 +36,6 @@ const BrowseMyGig = (
     if (!image || !title || !category || !subCategory || !deliveryTime || !description || !price || !revisions || tags.some(tag => tag.trim() === '')) {
       return toast.error('Please fill all the fields');
     }
-    console.log('isActive', activityStatus)
 
 
     const formData = new FormData();
@@ -59,9 +55,6 @@ const BrowseMyGig = (
     catch (err) {
       toast.error('Something went wrong!!!' + err)
     }
-    finally {
-      console.log('done')
-    }
 
 
   };
@@ -76,24 +69,16 @@ const BrowseMyGig = (
   const [answerFaqTrigger, isLoadingAnswerFaq] = useAsyncMutation(useAnswerFaqMutation)
   const handlePostAnswer = (id) => {
     const targetFaq = faqList.find(item => item._id === id);
-    console.log('Posting answer:', targetFaq);
     answerFaqTrigger('Posting Answer', { _id: id, answer: targetFaq.answer, gigId })
-      .then((response) => {
-        console.log('Answer posted successfully:', response);
-      })
-      .catch((error) => {
-        console.error('Error posting answer:', error);
-      });
+
     // TODO: replace with actual API call
     // await postAnswerToBackend(id, targetFaq.answer)
   };
 
   const addTag = () => setTags([...tags, '']);
 
-  const [isQuestion, setIsQuestion] = useState('')
   const handleAskQuestion = () => { }
   useEffect(() => {
-    console.log(gigInfo);
     setTitle(gigInfo?.userGig?.title)
     setCategory(gigInfo?.userGig?.category)
     setSubCategory(gigInfo?.userGig?.subCategory)
