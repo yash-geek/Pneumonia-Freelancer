@@ -1,5 +1,5 @@
 import pkg from 'cloudinary';
-const cloudinary = pkg.v2;
+const cloudinary = pkg.v2
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
