@@ -23,7 +23,7 @@
   }
 
   .pfp {
-    @apply h-12 w-12
+    @apply h-12 w-12 rounded-4xl border-1 border-blue-600
   }
   .btn {
     @apply px-4 py-2 transition-all duration-200;

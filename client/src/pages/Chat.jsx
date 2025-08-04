@@ -123,7 +123,7 @@ const Chat = () => {
                             </div>
                         ))
                     ) : (
-                        <p className='text-center text-gray-700'>Ara~ no messages yet... Say hi~ 👋</p>
+                        <p className='text-center text-gray-700'>no messages yet... Say hi~ 👋</p>
                     )}
                     <div ref={messagesEndRef} />
                 </div>

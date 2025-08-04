@@ -60,9 +60,16 @@ const ManageOrders = () => {
         <div className='h-[calc(100%-12rem)] w-full'>
           <div className='w-full h-full flex flex-col items-center p-4 gap-4 overflow-y-auto scrollbar-thin-pretty'>
             {
+              ordersData?.ordersForMe?.length > 0 ?
               ordersData?.ordersForMe?.filter(thisOrder => status.includes(thisOrder.status)).map((thisOrder, index) => (
                 <MyOrderItem key={index} order={thisOrder} />
-              ))
+                ))
+                :
+                <div className='flex flex-col items-center gap-3 justify-center h-full w-full'>
+                  <img className='w-40' src={addProfileImg} alt="Add Profile" />
+                  <span>No orders yet</span>
+                </div>
+              
             }
 
           </div>

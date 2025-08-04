@@ -5,7 +5,7 @@ import { server } from "../../constants/config"
 const api = createApi({
     reducerPath: "api",
     baseQuery: fetchBaseQuery({ baseUrl: `${server}/api/v1/` }),
-    tagTypes: ['Gigs', 'Orders','Deadlines'],
+    tagTypes: ['Gigs', 'Orders','Deadlines','Gig'],
     endpoints: (builder) => ({
         searchGigs: builder.query(
             {
@@ -42,7 +42,9 @@ const api = createApi({
                         credentials: 'include',
                     }
                 },
-                invalidatesTags: ['Gigs']
+                providesTags:['Gig']
+                ,
+                
             }
         ),
         askQuestion: builder.mutation({
@@ -54,6 +56,7 @@ const api = createApi({
                     question,
                 },
             }),
+            invalidatesTags: ['Gig']
         }),
         getMyOrders: builder.query(
             {
@@ -181,7 +184,7 @@ const api = createApi({
                 body: { answer, faqId: _id },
                 credentials: 'include',
             }),
-            invalidatesTags: ['Gigs']
+            invalidatesTags: ['Gigs','Gig']
         }),
         handleOrder: builder.mutation({
             query: ({ orderId, status }) => ({

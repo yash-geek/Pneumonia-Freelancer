@@ -5,6 +5,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useAskQuestionMutation, useCreateStripeSessionMutation, useGetGigInfoQuery, useLazyWorkerProfileQuery, useNewOrderMutation } from '../../redux/apis/api'
 import { useAsyncMutation } from '../../hooks/hook'
 import toast from 'react-hot-toast'
+import LayoutLoader from '../../components/Layouts/LayoutLoader'
 
 const BrowseGig = () => {
   const params = useParams()
@@ -66,7 +67,7 @@ const BrowseGig = () => {
     }
   }, [gigInfo, gigCreator, getWorker]);
 
-  if (isLoadingGig || isLoadingCreator) return <p className="text-center mt-10 text-xl">Loading... uwu~</p>;
+  if (isLoadingGig || isLoadingCreator) return <LayoutLoader/>;
 
   return (
     <div className='flex w-full flex-col md:flex-row gap-10 p-10 h-screen'>
