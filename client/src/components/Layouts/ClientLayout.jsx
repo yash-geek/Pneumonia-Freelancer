@@ -1,8 +1,6 @@
-import React, { useState } from 'react'
-import Header from './Header'
-import Nav from './Nav';
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import Header from './Header';
+import Nav from './Nav';
 
 const ClientLayout = ({ Component, ...props }) => {
     const { isMobile } = useSelector((state) => state.misc)
