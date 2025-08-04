@@ -76,6 +76,7 @@ io.on('connection', (socket) => {
     userSocketIDs.set(user._id.toString(), socket.id);
 
     socket.on(NEW_MESSAGE, async ({ orderId, content }) => {
+        console.log('new message called')
         try {
             // 1. Validate
             if (!orderId || !content)
@@ -143,7 +144,7 @@ io.on('connection', (socket) => {
 
             const senderSocketId = userSocketIDs.get(user._id.toString());
 
-            const membersSocket = [senderSocketId, receiverSocketId].filter(Boolean);
+            const membersSocket = [receiverSocketId].filter(Boolean);
 
 
             const messageForRealTime = {
@@ -159,11 +160,11 @@ io.on('connection', (socket) => {
             };
 
             membersSocket.forEach(socketId => {
+                console.log(socketId)
                 io.to(socketId).emit(NEW_MESSAGE, {
                     chatId: chat._id,
                     message: messageForRealTime,
                 });
-
                 io.to(socketId).emit(NEW_MESSAGE_ALERT, {
                     chatId: chat._id,
                 });

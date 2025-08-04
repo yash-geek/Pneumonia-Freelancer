@@ -99,7 +99,7 @@ const BrowseMyGig = (
 
         <Link
           to='/gigs'
-          className='bg-blue-800 absolute left-6 top-6 flex items-center gap-2 w-fit text-white border z-20 border-blue-500 px-4 py-1 rounded-full hover:bg-blue-700 transition-all'>
+          className='bg-blue-800 absolute left-6 top-6 flex items-center gap-2 w-fit text-white border z-10 border-blue-500 px-4 py-1 rounded-full hover:bg-blue-700 transition-all'>
           <BackIcon />
           <span>Back</span>
         </Link>

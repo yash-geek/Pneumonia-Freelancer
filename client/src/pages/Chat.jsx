@@ -7,7 +7,7 @@ import { Link, useParams } from 'react-router-dom';
 import LayoutLoader from '../components/Layouts/LayoutLoader';
 import { useFetchOrderQuery, useGetMessagesQuery } from '../redux/apis/api';
 import { useSocket } from '../socket';
-
+import {v4 as uuid} from 'uuid'
 const Chat = () => {
     const socket = useSocket();
     const { user } = useSelector((state) => state.auth);
@@ -38,14 +38,21 @@ const Chat = () => {
     useEffect(() => {
         if (!socket) return;
 
-        const handleNewMessage = ({ chatId, message: incomingMessage }) => {
-
+        const handleNewMessage = ({ message: incoming }) => {
             setMessages(prev => {
-                const exists = prev.some(msg => msg._id === incomingMessage._id);
-                if (!exists) return [...prev, incomingMessage];
-                return prev;
+                const already = prev.some(m =>
+                    m._id === incoming._id ||
+                    (m.clientId && m.clientId === incoming.clientId)
+                );
+                if (already) {
+                    return prev.map(m =>
+                        m.clientId === incoming.clientId ? { ...incoming, clientId: undefined } : m
+                    );
+                }
+                return [...prev, incoming];
             });
         };
+
 
         socket.on("NEW_MESSAGE", handleNewMessage);
 
@@ -58,9 +65,10 @@ const Chat = () => {
     // Send message
     const sendMessage = () => {
         if (!message.trim()) return;
-
+        const tempId = uuid();
         const tempMessage = {
-            _id: Date.now(), // temporary ID
+            _id: tempId,
+            clientId: tempId,
             text: message,
             sender: {
                 _id: user._id,
@@ -77,6 +85,7 @@ const Chat = () => {
         socket?.emit("NEW_MESSAGE", {
             orderId,
             content: message,
+            clientId:tempId
         });
 
         setMessage('');
