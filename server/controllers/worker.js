@@ -197,7 +197,7 @@ const getMyGigs = TryCatch(async (req, res, next) => {
     const userGigs = myGigs.map(
         (
             {
-                ratings, creator, ...rest
+                creator, ...rest
             }
         ) => (rest))
     return res.status(200).json({

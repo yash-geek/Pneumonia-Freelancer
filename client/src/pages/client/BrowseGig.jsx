@@ -263,7 +263,7 @@ const BrowseGig = () => {
         </button>
         <div className='flex items-center gap-4'>
           <img
-            src={'https://fiverr-res.cloudinary.com/image/upload/f_auto,q_auto,t_profile_original/v1/attachments/profile/photo/386c0b8f584977db82c71e4f78c778c2-1677686441502/27560ea0-c990-4abf-8964-2ca1a34db2fd.png' || gigCreator?.worker?.picture?.url}
+            src={gigCreator?.worker?.picture?.url}
             alt='Creator'
             className='w-16 h-16 rounded-full object-cover'
           />

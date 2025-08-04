@@ -20,6 +20,7 @@ const MyGigItem = ({ gig }) => {
         createdAt,
         ratings,
     } = gig;
+    console.log(gig)
 
     return (
         <Link
