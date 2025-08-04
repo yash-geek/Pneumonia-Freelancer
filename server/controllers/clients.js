@@ -12,7 +12,6 @@ import stripe from '../utils/stripe.js'
 const newClient = TryCatch(
     async (req, res, next) => {
 
-        console.log(req.body)
         const { name, password, email, role } = req.body;
         const user = await Client.create({
             name,
@@ -44,7 +43,6 @@ const logoutClient = TryCatch(async (req, res) => {
 
 const getClient = TryCatch(async (req, res, next) => {
     const userId = req.user._id;
-    console.log(userId)
     const role = req.user.role
     if (!userId) return next(new ErrorHandler('User not found', 404));
     const user = await Client.findOne({ _id: userId })
@@ -104,12 +102,12 @@ const askQuestion = TryCatch(async (req, res, next) => {
     return res.status(200).json({
         success: true,
         gig,
+        message:'question submitted succesfully',
     });
 })
 
 const getWorkerProfile = TryCatch(async (req, res, next) => {
     const { workerId } = req.params;
-    console.log(workerId)
     if (!workerId) return next(new ErrorHandler('Please provide worker', 400));
     const worker = await Profile.findOne({ _id: workerId })
     if (!worker) return next(new ErrorHandler('Worker not found', 404));
@@ -148,7 +146,6 @@ const getOrderDetails = TryCatch(
 const createNewOrder = TryCatch(
     async (req, res, next) => {
         const userId = req.user._id;
-        //console.log(req)
         const { gigId } = req.body;
         if (!gigId) return next(new ErrorHandler('Please provide gig info', 403));
         const gigInfo = await Gig.findOne({ _id: gigId });

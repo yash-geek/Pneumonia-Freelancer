@@ -57,9 +57,7 @@ const getWorker = TryCatch(async (req, res, next) => {
 })
 
 const createProfile = TryCatch(async (req, res, next) => {
-    console.log('create profile')
     const userId = req.user._id;
-    console.log(userId)
     const { bio, contact, address, skills, email, name } = req.body;
     //name, email
     const file = req.file
@@ -90,6 +88,7 @@ const createProfile = TryCatch(async (req, res, next) => {
     return res.status(200).json({
         success: true,
         profile,
+        message:'Profile createed succesfully',
     });
 })
 const getProfile = TryCatch(async (req, res, next) => {
@@ -155,12 +154,9 @@ const updateProfile = TryCatch(async (req, res, next) => {
 });
 
 const createGig = TryCatch(async (req, res, next) => {
-    console.log('sevrer req')
     const userId = req.user._id;
     const { title, description, price, deliveryTime, revisions, tags, category, subCategory, faq, isActive } = req.body;
-    console.log(req.file)
     const gigImage = req.file || null
-    console.log(gigImage)
     if (!gigImage)
         return next(new ErrorHandler("Please Upload Images For Your Gig", 400))
     if (!userId) return next(new ErrorHandler('User not found', 404));
@@ -170,7 +166,6 @@ const createGig = TryCatch(async (req, res, next) => {
         public_id: result[0].public_id,
         url: result[0].url,
     }];
-    console.log(attachments)
     const gig = await Gig.create(
         {
             creator: myProfile._id,
@@ -190,6 +185,7 @@ const createGig = TryCatch(async (req, res, next) => {
     return res.status(200).json({
         success: true,
         gig,
+        message: 'Gig created succesfully',
     });
 })
 
@@ -212,7 +208,6 @@ const getMyGigs = TryCatch(async (req, res, next) => {
 const getMyGigInfo = TryCatch(async (req, res, next) => {
     const userId = req.user._id;
     const gigId = req.params.id;
-    console.log(gigId)
 
     if (!userId) return next(new ErrorHandler('User not found', 404));
 
@@ -288,7 +283,6 @@ const updateGig = TryCatch(async (req, res, next) => {
         } catch (error) {
             return new ErrorHandler("Error uploading image", 500)
         }
-        console.log(gig.gigImages)
 
 
 
@@ -306,7 +300,6 @@ const updateGig = TryCatch(async (req, res, next) => {
 const answerFaqQuestion = TryCatch(async (req, res, next) => {
     const userId = req.user._id;
     const { faqId, answer } = req.body;
-    console.log(faqId)
     const { id: gigId } = req.params;
 
     if (!faqId || !answer) {
@@ -330,7 +323,7 @@ const answerFaqQuestion = TryCatch(async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        message: 'FAQ answer updated successfully',
+        message: 'Answer updated successfully',
         faq: faqItem
     });
 });
@@ -384,7 +377,6 @@ const fetchOrderWithId = TryCatch(
 const handleOrders = TryCatch(
     async (req, res, next) => {
         const { orderId, status } = req.body;
-        console.log(orderId, status)
         const userId = req.user._id;
         const profile = await Profile.findOne({ owner: userId })
         if (!profile)

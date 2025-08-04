@@ -73,19 +73,15 @@ io.use((socket, next) => {
 
 io.on('connection', (socket) => {
     const user = socket.user;
-    console.log("Hello")
-    console.log(`User ${user} connected via socket`);
     userSocketIDs.set(user._id.toString(), socket.id);
 
     socket.on(NEW_MESSAGE, async ({ orderId, content }) => {
         try {
-            console.count('new message')
             // 1. Validate
             if (!orderId || !content)
                 return socket.emit("ERROR", { message: "Missing orderId or content" });
 
             // 2. Find chat
-            console.count('new message')
             let chat = await Chat.findOne({ order: orderId });
             if (!chat) {
                 const order = await Order.findById(orderId);
@@ -101,11 +97,9 @@ io.on('connection', (socket) => {
                 });
 
             }
-            console.count('new message')
 
             // 3. Permission check
             let participantId = user._id;
-            console.log(socket.userRole)
             if (socket.userRole === 'Freelancer') {
                 const profile = await Profile.findOne({ owner: user._id });
                 if (!profile) {
@@ -113,19 +107,14 @@ io.on('connection', (socket) => {
                 }
                 participantId = profile._id;
             }
-            console.log(participantId, chat.participants)
             if (!chat.participants.some(p => p.user.toString() === participantId.toString())) {
 
                 return socket.emit("ERROR", { message: "You are not part of this chat" });
             }
-            console.count('new message')
 
             // 4. Determine sender model + role
             const senderModel = socket.userRole;
-            console.log('senderModel', senderModel)
             const role = socket.userRole
-            console.count('new message')
-            console.log(user)
 
             // 5. Save message to DB
             const message = await Message.create({
@@ -138,7 +127,7 @@ io.on('connection', (socket) => {
 
             // 6. Emit to both users
             const receiver = chat.participants.find(p => p.user.toString() !== user._id.toString());
-            console.log('receiver', receiver)
+       
             if (!receiver) return;
 
             let receiverSocketId = null;
@@ -147,17 +136,14 @@ io.on('connection', (socket) => {
                 const profile = await Profile.findById(receiver.user);
                 if (profile) {
                     receiverSocketId = userSocketIDs.get(profile.owner.toString());
-                    console.log("🎯 Mapped freelancer profile ➜ owner ID:", profile.owner.toString());
                 }
             } else {
                 receiverSocketId = userSocketIDs.get(receiver.user.toString());
-                console.log("👥 Receiver is client, using user._id:", receiver.user.toString());
             }
 
             const senderSocketId = userSocketIDs.get(user._id.toString());
 
             const membersSocket = [senderSocketId, receiverSocketId].filter(Boolean);
-            console.log("Emitting to sockets:", membersSocket);
 
 
             const messageForRealTime = {
@@ -185,13 +171,11 @@ io.on('connection', (socket) => {
 
 
         } catch (error) {
-            console.error("Socket Message Error: ", error.message);
             socket.emit("ERROR", { message: "Something went wrong!" });
         }
     });
 
     socket.on("disconnect", () => {
-        console.log(`User ${user._id} disconnected`);
         userSocketIDs.delete(user._id.toString());
     });
 

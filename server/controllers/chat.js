@@ -2,7 +2,7 @@ import { Chat } from '../models/chats.js';
 import { Order } from '../models/orders.js';
 import { Message } from '../models/messages.js';
 import { TryCatch } from '../middlewares/error.js';
-import { ErrorHandler } from '../utils/utility.js'; // missing in your file
+import { ErrorHandler } from '../utils/utility.js'; 
 import { emitEvent } from '../utils/features.js';
 import { Profile } from '../models/workerProfile.js';
 
@@ -16,7 +16,6 @@ const getMessages = TryCatch(async (req, res, next) => {
 
     // Create chat if not exists
     if (!chat) {
-        console.log('chat not found')
         return next(new ErrorHandler("Chat not found", 404));
     }
 
@@ -33,7 +32,6 @@ const getMessages = TryCatch(async (req, res, next) => {
         currParticipant = profile._id;
     }
     if (!chat.participants.some(p => p.user.toString() === currParticipant.toString())) {
-        console.log(chat.participants, currParticipant)
         return next(new ErrorHandler("You are not allowed to access this chat", 403));
     }
 
@@ -49,8 +47,6 @@ const getMessages = TryCatch(async (req, res, next) => {
 
         Message.countDocuments({ chat: chat._id })
     ]);
-    console.log('messages', messages)
-    console.log(totalMessageCount)
     if (totalMessageCount === 0) {
         return res.status(200).json({
             success: true,
